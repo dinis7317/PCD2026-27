@@ -1,7 +1,6 @@
 package iscot.client;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -13,68 +12,100 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import iscot.client.gui.LightIcon;
+import iscot.client.gui.PainelHistorico;
 import iscot.enums.Areas;
 import iscot.enums.Type;
 import iscot.event.Event;
 import iscot.event.RegistrationEvent;
 import iscot.event.highlevelorder.AreaLightingOrderEvent;
-import iscot.event.sensor.LightSensorEvent;
 
 public class Light {
 
+	private final Areas area;
+	private final JFrame janela;
+	private final LightIcon luz;
+	private final PainelHistorico historico;
+
 	/**
+	 * Construtor do Atuador de Luz.
 	 * 
-	 * @param args server address and port
-	 * @param args roomName: string
-	 * @throws IOException 
-	 * @throws UnknownHostException 
-	 * @throws NumberFormatException 
-	 * @throws InterruptedException 
-	 * @throws ClassNotFoundException 
+	 * @param area Divisão da casa onde o atuador opera
+	 */
+	public Light(Areas area) {
+		this.area = area;
+
+		janela = new JFrame("Luz em " + area);
+		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+		JPanel painel = new JPanel(new BorderLayout(5, 5));
+		painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+		// Ícone gráfico central
+		luz = new LightIcon();
+		painel.add(luz, BorderLayout.CENTER);
+
+		// Componente reutilizável de Histórico de Ações (Issue #1 / Secção 1.3)
+		historico = new PainelHistorico();
+		painel.add(historico, BorderLayout.SOUTH);
+
+		janela.setContentPane(painel);
+		janela.setLocation(600, 400);
+		janela.pack();
+		janela.setVisible(true);
+	}
+
+	/**
+	 * ISSUE #3: Desacopla o processamento de eventos da camada de rede.
+	 * 
+	 * @param message Evento recebido a ser interpretado pelo atuador
+	 */
+	public void aplicarEvento(Event message) {
+		// TODO (Issue #3): Completa esta função!
+		//
+		// Passo 1: Verificar se message instanceof AreaLightingOrderEvent
+		// Passo 2: Se for, fazer cast: AreaLightingOrderEvent order = (AreaLightingOrderEvent) message;
+		// Passo 3: Verificar se order.area == this.area
+		// Passo 4: Atualizar o ícone visual: luz.setAtivo(order.state);
+		// Passo 5: Registar a ação no histórico:
+		//          String descricao = order.state ? "Lâmpada ligada" : "Lâmpada desligada";
+		//          historico.registarAcao(descricao);
+	}
+
+	/**
+	 * Inicia o ciclo de receção de eventos a partir de um servidor via Socket.
+	 */
+	public void iniciarConexao(String host, int port) throws IOException, ClassNotFoundException {
+		Socket socket = new Socket(host, port);
+		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+
+		// Registo do atuador no servidor
+		out.writeObject(new RegistrationEvent(area, Type.ACTUATOR));
+
+		while (true) {
+			Event message = (Event) in.readObject();
+			aplicarEvento(message);
+		}
+	}
+
+	/**
+	 * Executável do cliente de luz.
+	 * Suporta modo rede (3 argumentos) e modo teste/demonstração sem rede (0 argumentos).
 	 */
 	public static void main(String[] args) throws NumberFormatException, UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
-		if(args.length!=3) {
-			System.err.println("Invalid arguments!");
-		}
-		else {
-			Socket socket=new Socket(args[0],Integer.parseInt(args[1]));
-			ObjectOutputStream out= new ObjectOutputStream(socket.getOutputStream()); // useless, no outgoing messages
-			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+		if (args.length != 3) {
+			System.out.println("Modo teste/demonstração (Fase 3): a abrir janela na Sala...");
+			Light light = new Light(Areas.Sala);
+			// Exemplo de teste para a Fase 3
+			Thread.sleep(1000);
+			light.aplicarEvento(new AreaLightingOrderEvent(Areas.Sala, true));
+		} else {
+			String host = args[0];
+			int port = Integer.parseInt(args[1]);
+			Areas area = Areas.valueOf(args[2]);
 
-			// register with the server
-			Areas area=Areas.valueOf(args[2]);
-			out.writeObject(new RegistrationEvent(area, Type.ACTUATOR));
-
-			JFrame janela = new JFrame("Luz em "+area);
-			janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-			
-			// Criar os componentes gráficos
-			JPanel painel=new JPanel();
-			painel.setLayout(new BorderLayout());
-			LightIcon luz = new LightIcon();
-			painel.add(luz,BorderLayout.CENTER);
-			janela.setContentPane(painel);
-			janela.setLocation(600, 400);
-			janela.setMinimumSize(janela.getSize());
-			janela.pack();
-			janela.setVisible(true);
-
-			while(true) {
-				Event message=(Event) in.readObject();
-				if( message instanceof AreaLightingOrderEvent) {
-					AreaLightingOrderEvent areaLightingOrderMessage=(AreaLightingOrderEvent)message;
-					if(areaLightingOrderMessage.area == area) {
-						luz.setAtivo(areaLightingOrderMessage.state);
-						System.err.println("Altering light  at:"+area+" to;"+areaLightingOrderMessage.state);
-					}
-					else
-						System.err.println("Message for unexpected area!");
-				}
-				else
-					System.err.println("Unexpected message in Light:"+message);
-
-			}
+			Light light = new Light(area);
+			light.iniciarConexao(host, port);
 		}
 	}
 }
