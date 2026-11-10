@@ -68,11 +68,13 @@ public class Ventilator {
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
 	public void aplicarEvento(Event message) {
-		// TODO (Issue #3): Implementar a interpretação do evento
-		// 1. Verificar se message instanceof AreaVentilationOrderEvent
-		// 2. Se for, fazer cast e verificar se order.area == this.area
-		// 3. Atualizar o componente visual (ventilator.setAtivo(...))
-		// 4. Registar no histórico: historico.registarAcao(...)
+		if (message instanceof AreaVentilationOrderEvent) {
+			AreaVentilationOrderEvent order = (AreaVentilationOrderEvent) message;
+			if (order.area == this.area) {
+				ventilator.setLigado(order.state);
+				historico.registarAcao(order.state ? "Ventilador ligado" : "Ventilador desligado");
+			}
+		}
 	}
 
 	/**

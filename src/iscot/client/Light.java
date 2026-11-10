@@ -60,15 +60,13 @@ public class Light {
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
 	public void aplicarEvento(Event message) {
-		// TODO (Issue #3): Completa esta função!
-		//
-		// Passo 1: Verificar se message instanceof AreaLightingOrderEvent
-		// Passo 2: Se for, fazer cast: AreaLightingOrderEvent order = (AreaLightingOrderEvent) message;
-		// Passo 3: Verificar se order.area == this.area
-		// Passo 4: Atualizar o ícone visual: luz.setAtivo(order.state);
-		// Passo 5: Registar a ação no histórico:
-		//          String descricao = order.state ? "Lâmpada ligada" : "Lâmpada desligada";
-		//          historico.registarAcao(descricao);
+		if (message instanceof AreaLightingOrderEvent) {
+			AreaLightingOrderEvent order = (AreaLightingOrderEvent) message;
+			if (order.area == this.area) {
+				luz.setLigada(order.state);
+				historico.registarAcao(order.state ? "Lâmpada ligada" : "Lâmpada desligada");
+			}
+		}
 	}
 
 	/**

@@ -66,11 +66,13 @@ public class Irrigator {
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
 	public void aplicarEvento(Event message) {
-		// TODO (Issue #3): Implementar a interpretação do evento
-		// 1. Verificar se message instanceof AreaIrrigationOrderEvent
-		// 2. Se for, fazer cast e verificar se order.area == this.area
-		// 3. Atualizar o componente visual (irrigationIcon.setAtivo(...))
-		// 4. Registar no histórico: historico.registarAcao(...)
+		if (message instanceof AreaIrrigationOrderEvent) {
+			AreaIrrigationOrderEvent order = (AreaIrrigationOrderEvent) message;
+			if (order.area == this.area) {
+				irrigationIcon.setAtiva(order.state);
+				historico.registarAcao(order.state ? "Rega ligada" : "Rega desligada");
+			}
+		}
 	}
 
 	/**
