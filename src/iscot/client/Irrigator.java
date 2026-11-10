@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import iscot.client.gui.IrrigationIcon;
+import iscot.client.gui.PainelHistorico;
 import iscot.enums.Areas;
 import iscot.enums.Type;
 import iscot.event.Event;
@@ -30,8 +31,7 @@ public class Irrigator {
 	private final Areas area;
 	private final JFrame janela;
 	private final IrrigationIcon irrigationIcon;
-	private final DefaultListModel<String> historicoModel;
-	private final JList<String> historicoList;
+	private final PainelHistorico historico;
 
 	/**
 	 * Construtor do Atuador de Rega (Irrigador).
@@ -50,14 +50,9 @@ public class Irrigator {
 		irrigationIcon = new IrrigationIcon();
 		painel.add(irrigationIcon, BorderLayout.CENTER);
 
-		// Componente de Histórico de Ações (Issue #1 / Secção 1.3)
-		historicoModel = new DefaultListModel<>();
-		historicoList = new JList<>(historicoModel);
-		historicoList.setVisibleRowCount(5);
-		JScrollPane scrollHistorico = new JScrollPane(historicoList);
-		scrollHistorico.setBorder(BorderFactory.createTitledBorder("Histórico de Ações"));
-		scrollHistorico.setPreferredSize(new Dimension(260, 120));
-		painel.add(scrollHistorico, BorderLayout.SOUTH);
+		// Componente reutilizável de Histórico de Ações (Issue #1 / Secção 1.3)
+		historico = new PainelHistorico();
+		painel.add(historico, BorderLayout.SOUTH);
 
 		janela.setContentPane(painel);
 		janela.setLocation(600, 400);
@@ -66,20 +61,7 @@ public class Irrigator {
 	}
 
 	/**
-	 * ISSUE #1 (Secção 1.3): Regista uma ação tomada no histórico verificável pelo utilizador com timestamp.
-	 * 
-	 * @param descricao Texto descritivo da ação realizada (ex: "Rega ativada")
-	 */
-	public void adicionarAcaoAoHistorico(String descricao) {
-		// TODO (Issue #1): Implementar a adição ao histórico
-		// 1. Obter a hora atual formatada em "HH:mm:ss"
-		// 2. Construir a mensagem: descricao + " - " + timestamp
-		// 3. Adicionar ao historicoModel
-		// 4. Fazer scroll para o último item
-	}
-
-	/**
-	 * ISSUE #3: Desacopla a interpretação de eventos da camada de rede.
+	 * ISSUE #3: Desacopla o processamento de eventos da camada de rede.
 	 * 
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
@@ -88,7 +70,7 @@ public class Irrigator {
 		// 1. Verificar se message instanceof AreaIrrigationOrderEvent
 		// 2. Se for, fazer cast e verificar se order.area == this.area
 		// 3. Atualizar o componente visual (irrigationIcon.setAtivo(...))
-		// 4. Chamar adicionarAcaoAoHistorico(...) com a descrição da ação
+		// 4. Registar no histórico: historico.registarAcao(...)
 	}
 
 	/**
