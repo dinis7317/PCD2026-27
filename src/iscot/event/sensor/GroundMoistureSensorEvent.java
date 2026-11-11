@@ -12,6 +12,6 @@ public class GroundMoistureSensorEvent extends SensorEvent{
 
 	@Override
 	public String toString() {
-		return "GroundMoistureSensorMessage [humidity=" + humidity + ", area=" + area + ", getType()=" + getType() + "]";
+		return "GroundMoistureSensorEvent [humidity=" + humidity + ", area=" + area + ", getType()=" + getType() + "]";
 	}
 }

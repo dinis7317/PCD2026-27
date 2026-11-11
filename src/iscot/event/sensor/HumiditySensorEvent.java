@@ -12,7 +12,7 @@ public class HumiditySensorEvent extends SensorEvent{
 
 	@Override
 	public String toString() {
-		return "HumiditySensorMessage [light=" + humidity + ", area=" + area + ", getType()=" + getType() + "]";
+		return "HumiditySensorEvent [humidity=" + humidity + ", area=" + area + ", getType()=" + getType() + "]";
 	}
 
 }

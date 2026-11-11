@@ -9,4 +9,8 @@ public class TemperatureSensorEvent extends SensorEvent {
 		super(area);
 		this.temperature = valor;
 	}
+	@Override
+	public String toString() {
+		return "TemperatureSensorEvent [temperature=" + temperature + ", area=" + area + ", getType()=" + getType() + "]";
+	}
 }
