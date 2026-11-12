@@ -5,7 +5,7 @@ import iscot.enums.Areas;
 public class AreaVentilationOrderEvent extends HighLevelOrderEvent{
 	@Override
 	public String toString() {
-		return "AreaVentilationOrderMessage [state=" + state + ", area=" + area + ", getType()=" + getType() + "]";
+		return "AreaVentilationOrderEvent [state=" + state + ", area=" + area + ", getType()=" + getType() + "]";
 	}
 
 	public final boolean state;

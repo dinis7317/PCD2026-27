@@ -11,7 +11,7 @@ public class AreaTemperatureOrderEvent extends HighLevelOrderEvent{
 	}
 	@Override
 	public String toString() {
-		return "AreaTemperatureOrderMessage [mode=" + mode + ", temperature=" + temperature + ", area=" + area + "]";
+		return "AreaTemperatureOrderEvent [mode=" + mode + ", temperature=" + temperature + ", area=" + area + "]";
 	}
 	public final AirConditioningMode mode;
 	public final float temperature;

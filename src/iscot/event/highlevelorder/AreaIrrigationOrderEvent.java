@@ -12,6 +12,6 @@ public class AreaIrrigationOrderEvent extends HighLevelOrderEvent {
 
 	@Override
 	public String toString() {
-		return "AreaIrrigationrderMessage [state=" + state + ", area=" + area + "]";
+		return "AreaIrrigationOrderEvent [state=" + state + ", area=" + area + "]";
 	}
 }
