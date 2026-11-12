@@ -37,7 +37,7 @@ public class ArCondicionado {
 
 	/**
 	 * Construtor do Atuador de Ar Condicionado.
-	 * 
+	 *
 	 * @param area Divisão da casa onde o atuador opera
 	 */
 	public ArCondicionado(Areas area) {
@@ -64,31 +64,41 @@ public class ArCondicionado {
 
 	/**
 	 * ISSUE #3: Desacopla a interpretação de eventos da camada de rede.
-	 * 
+	 *
 	 * @param message Evento recebido (AreaTemperatureOrderEvent ou AreaVentilationOrderEvent)
 	 */
 	public void aplicarEvento(Event message) {
 		if (message instanceof AreaTemperatureOrderEvent) {
 			AreaTemperatureOrderEvent order = (AreaTemperatureOrderEvent) message;
 			if (order.area == this.area) {
-				arCond.setModo(order.mode);
 				if (order.mode == AirConditioningMode.Desligado) {
+					arCond.setModo(AirConditioningMode.Desligado);
 					painelHistorico.registarAcao("AC desligado");
 				} else {
-					painelHistorico.registarAcao("AC desligado" + order.mode + " (" + order.temperature + "ºC)");
+					// o ACIcon só aceita temperaturas entre 16 e 30 °C
+					if (order.temperature >= 16 && order.temperature <= 30) {
+						arCond.setTemperatura(order.temperature);
+					}
+					arCond.setModo(order.mode);
+					painelHistorico.registarAcao("AC em " + order.mode + " (" + order.temperature + " ºC)");
 				}
 			}
-				
+
 		} else if (message instanceof AreaVentilationOrderEvent) {
 			AreaVentilationOrderEvent order = (AreaVentilationOrderEvent) message;
-			if (order.area == this.area) {
-				arCond.setModo(AirConditioningMode.Ventilação);
-				painelHistorico.registarAcao("AC em Ventilação");
-			}else {
-				arCond.setModo(AirConditioningMode.Desligado);
-				painelHistorico.registarAcao("AC desligado");
+			if (order.area == this.area) { // ordens de outras áreas são ignoradas
+				AirConditioningMode atual = arCond.getModo();
+				if (atual == AirConditioningMode.Frio || atual == AirConditioningMode.Aquecimento) {
+					// Enunciado: só ventila se não estiver a arrefecer ou a aquecer
+					System.out.println("Ordem de ventilação ignorada: AC em " + atual);
+				} else if (order.state) {
+					arCond.setModo(AirConditioningMode.Ventilação);
+					painelHistorico.registarAcao("AC em Ventilação");
+				} else if (atual == AirConditioningMode.Ventilação) {
+					arCond.setModo(AirConditioningMode.Desligado);
+					painelHistorico.registarAcao("AC desligado");
+				}
 			}
-
 		}
 	}
 
