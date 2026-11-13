@@ -12,7 +12,6 @@ public abstract class HighLevelOrderEvent extends Event {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
 		return Type.DECIDER;
 	}
 
