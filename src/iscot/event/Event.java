@@ -1,6 +1,5 @@
 package iscot.event;
 
-import java.awt.geom.Area;
 import java.io.Serializable;
 
 import iscot.enums.Areas;

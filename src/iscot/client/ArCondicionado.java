@@ -1,30 +1,16 @@
 package iscot.client;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import iscot.client.gui.PainelHistorico;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 import iscot.client.gui.ACIcon;
+import iscot.client.gui.PainelHistorico;
 import iscot.enums.AirConditioningMode;
 import iscot.enums.Areas;
-import iscot.enums.Type;
 import iscot.event.Event;
-import iscot.event.RegistrationEvent;
 import iscot.event.highlevelorder.AreaTemperatureOrderEvent;
 import iscot.event.highlevelorder.AreaVentilationOrderEvent;
 
@@ -63,8 +49,6 @@ public class ArCondicionado {
 	}
 
 	/**
-	 * ISSUE #3: Desacopla a interpretação de eventos da camada de rede.
-	 *
 	 * @param message Evento recebido (AreaTemperatureOrderEvent ou AreaVentilationOrderEvent)
 	 */
 	public void aplicarEvento(Event message) {
@@ -75,7 +59,7 @@ public class ArCondicionado {
 					arCond.setModo(AirConditioningMode.Desligado);
 					painelHistorico.registarAcao("AC desligado");
 				} else {
-					// o ACIcon só aceita temperaturas entre 16 e 30 °C
+					// o ACIcon só aceita temperaturas entre 16 e 30 C
 					if (order.temperature >= 16 && order.temperature <= 30) {
 						arCond.setTemperatura(order.temperature);
 					}
@@ -102,35 +86,14 @@ public class ArCondicionado {
 		}
 	}
 
-	/**
-	 * Inicia o ciclo de receção de eventos a partir de um servidor via Socket.
-	 */
-	public void iniciarConexao(String host, int port) throws IOException, ClassNotFoundException {
-		Socket socket = new Socket(host, port);
-		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
-		out.writeObject(new RegistrationEvent(area, Type.ACTUATOR));
-
-		while (true) {
-			Event message = (Event) in.readObject();
-			aplicarEvento(message);
+	public static void main(String[] args) throws InterruptedException {
+		if (args.length != 0 && args.length != 1) {
+			System.err.println("Invalid arguments!");
+			return;
 		}
-	}
-
-	public static void main(String[] args) throws NumberFormatException, UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
-		if (args.length != 3) {
-			System.out.println("Modo teste/demonstração (Fase 3): a abrir janela no Quarto...");
-			ArCondicionado ac = new ArCondicionado(Areas.Quarto);
-			Thread.sleep(1000);
-			ac.aplicarEvento(new AreaTemperatureOrderEvent(Areas.Quarto, AirConditioningMode.Frio, 21.0f));
-		} else {
-			String host = args[0];
-			int port = Integer.parseInt(args[1]);
-			Areas area = Areas.valueOf(args[2]);
-
-			ArCondicionado ac = new ArCondicionado(area);
-			ac.iniciarConexao(host, port);
-		}
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Quarto;
+		ArCondicionado ac = new ArCondicionado(area);
+		Thread.sleep(1000);
+		ac.aplicarEvento(new AreaTemperatureOrderEvent(area, AirConditioningMode.Frio, 21.0f));
 	}
 }

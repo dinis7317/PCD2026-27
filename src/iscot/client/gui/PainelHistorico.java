@@ -12,18 +12,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-/**
- * Componente gráfico reutilizável para o Histórico de Ações dos Atuadores.
- * Cumpre os requisitos da Secção 1.3 do enunciado do projeto PCD.
- */
 public class PainelHistorico extends JPanel {
 
 	private final DefaultListModel<String> modeloLista;
 	private final JList<String> listaVisual;
 
-	/**
-	 * Construtor: Inicializa a lista gráfica e coloca-a dentro de um painel com scroll.
-	 */
 	public PainelHistorico() {
 		super(new BorderLayout());
 
@@ -39,11 +32,6 @@ public class PainelHistorico extends JPanel {
 	}
 
 	/**
-	 * ISSUE #1 (Secção 1.3 do Enunciado):
-	 * Regista uma ação tomada pelo atuador no histórico visível, acompanhada de timestamp.
-	 * 
-	 * Formato exigido pelo enunciado: "Ação - HH:MM:SS" (ex: "Lâmpada ligada - 14:30:15").
-	 * 
 	 * @param descricao Texto descritivo da ação realizada (ex: "Lâmpada ligada", "Ventilador desligado")
 	 */
 	public void registarAcao(String descricao) {
@@ -55,12 +43,5 @@ public class PainelHistorico extends JPanel {
 		}else {
 			System.err.println("Descrição da ação não pode ser nula.");
 		}
-	}
-
-	/**
-	 * Método auxiliar para obter o modelo de dados, se necessário.
-	 */
-	public DefaultListModel<String> getModeloLista() {
-		return modeloLista;
 	}
 }

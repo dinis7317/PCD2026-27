@@ -1,11 +1,6 @@
 package iscot.client;
 
 import java.awt.BorderLayout;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -14,9 +9,7 @@ import javax.swing.JPanel;
 import iscot.client.gui.LightIcon;
 import iscot.client.gui.PainelHistorico;
 import iscot.enums.Areas;
-import iscot.enums.Type;
 import iscot.event.Event;
-import iscot.event.RegistrationEvent;
 import iscot.event.highlevelorder.AreaLightingOrderEvent;
 
 public class Light {
@@ -55,8 +48,6 @@ public class Light {
 	}
 
 	/**
-	 * ISSUE #3: Desacopla o processamento de eventos da camada de rede.
-	 * 
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
 	public void aplicarEvento(Event message) {
@@ -69,41 +60,15 @@ public class Light {
 		}
 	}
 
-	/**
-	 * Inicia o ciclo de receção de eventos a partir de um servidor via Socket.
-	 */
-	public void iniciarConexao(String host, int port) throws IOException, ClassNotFoundException {
-		Socket socket = new Socket(host, port);
-		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
-		// Registo do atuador no servidor
-		out.writeObject(new RegistrationEvent(area, Type.ACTUATOR));
-
-		while (true) {
-			Event message = (Event) in.readObject();
-			aplicarEvento(message);
+	public static void main(String[] args) throws InterruptedException {
+		if (args.length != 0 && args.length != 1) {
+			System.err.println("Invalid arguments!");
+			return;
 		}
-	}
 
-	/**
-	 * Executável do cliente de luz.
-	 * Suporta modo rede (3 argumentos) e modo teste/demonstração sem rede (0 argumentos).
-	 */
-	public static void main(String[] args) throws NumberFormatException, UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
-		if (args.length != 3) {
-			System.out.println("Modo teste/demonstração (Fase 3): a abrir janela na Sala...");
-			Light light = new Light(Areas.Sala);
-			// Exemplo de teste para a Fase 3
-			Thread.sleep(1000);
-			light.aplicarEvento(new AreaLightingOrderEvent(Areas.Sala, true));
-		} else {
-			String host = args[0];
-			int port = Integer.parseInt(args[1]);
-			Areas area = Areas.valueOf(args[2]);
-
-			Light light = new Light(area);
-			light.iniciarConexao(host, port);
-		}
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Sala;
+		Light light = new Light(area);
+		Thread.sleep(1000);
+		light.aplicarEvento(new AreaLightingOrderEvent(area, true));
 	}
 }

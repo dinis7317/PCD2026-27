@@ -1,29 +1,15 @@
 package iscot.client;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 
 import iscot.client.gui.IrrigationIcon;
 import iscot.client.gui.PainelHistorico;
 import iscot.enums.Areas;
-import iscot.enums.Type;
 import iscot.event.Event;
-import iscot.event.RegistrationEvent;
 import iscot.event.highlevelorder.AreaIrrigationOrderEvent;
 
 public class Irrigator {
@@ -50,7 +36,7 @@ public class Irrigator {
 		irrigationIcon = new IrrigationIcon();
 		painel.add(irrigationIcon, BorderLayout.CENTER);
 
-		// Componente reutilizável de Histórico de Ações (Issue #1 / Secção 1.3)
+		// componente historico
 		historico = new PainelHistorico();
 		painel.add(historico, BorderLayout.SOUTH);
 
@@ -61,8 +47,6 @@ public class Irrigator {
 	}
 
 	/**
-	 * ISSUE #3: Desacopla o processamento de eventos da camada de rede.
-	 * 
 	 * @param message Evento recebido a ser interpretado pelo atuador
 	 */
 	public void aplicarEvento(Event message) {
@@ -75,35 +59,14 @@ public class Irrigator {
 		}
 	}
 
-	/**
-	 * Inicia o ciclo de receção de eventos a partir de um servidor via Socket.
-	 */
-	public void iniciarConexao(String host, int port) throws IOException, ClassNotFoundException {
-		Socket socket = new Socket(host, port);
-		ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-		ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-
-		out.writeObject(new RegistrationEvent(area, Type.ACTUATOR));
-
-		while (true) {
-			Event message = (Event) in.readObject();
-			aplicarEvento(message);
+	public static void main(String[] args) throws InterruptedException {
+		if (args.length != 0 && args.length != 1) {
+			System.err.println("Invalid arguments!");
+			return;
 		}
-	}
-
-	public static void main(String[] args) throws NumberFormatException, UnknownHostException, IOException, InterruptedException, ClassNotFoundException {
-		if (args.length != 3) {
-			System.out.println("Modo teste/demonstração (Fase 3): a abrir janela no Jardim...");
-			Irrigator irr = new Irrigator(Areas.Jardim);
-			Thread.sleep(1000);
-			irr.aplicarEvento(new AreaIrrigationOrderEvent(Areas.Jardim, true));
-		} else {
-			String host = args[0];
-			int port = Integer.parseInt(args[1]);
-			Areas area = Areas.valueOf(args[2]);
-
-			Irrigator irr = new Irrigator(area);
-			irr.iniciarConexao(host, port);
-		}
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Jardim;
+		Irrigator irr = new Irrigator(area);
+		Thread.sleep(1000);
+		irr.aplicarEvento(new AreaIrrigationOrderEvent(area, true));
 	}
 }
