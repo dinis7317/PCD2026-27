@@ -1,5 +1,5 @@
 package iscot.enums;
 
 public enum Areas {
-	Cozinha,WC,Sala,Quarto,Jardim
+	Kitchen,WC,LivingRoom,BedRoom,Garden
 }

@@ -19,9 +19,6 @@ public class Ventilator {
 	private final VentilatorIcon ventilator;
 	private final PainelHistorico historico;
 
-	/**
-	 * @param area Divisão da casa onde o atuador opera
-	 */
 	public Ventilator(Areas area) {
 		this.area = area;
 
@@ -31,11 +28,9 @@ public class Ventilator {
 		JPanel painel = new JPanel(new BorderLayout(5, 5));
 		painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		// icone central
 		ventilator = new VentilatorIcon();
 		painel.add(ventilator, BorderLayout.CENTER);
 
-		// Componente historico
 		historico = new PainelHistorico();
 		painel.add(historico, BorderLayout.SOUTH);
 
@@ -45,15 +40,12 @@ public class Ventilator {
 		janela.setVisible(true);
 	}
 
-	/**
-	 * @param message Evento recebido a ser interpretado pelo atuador
-	 */
 	public void aplicarEvento(Event message) {
 		if (message instanceof AreaVentilationOrderEvent) {
 			AreaVentilationOrderEvent order = (AreaVentilationOrderEvent) message;
-			if (order.area == this.area) {
-				ventilator.setLigado(order.state);
-				historico.registarAcao(order.state ? "Ventilador ligado" : "Ventilador desligado");
+			if (order.getArea() == this.area) {
+				ventilator.setLigado(order.isLigado());
+				historico.registarAcao(order.isLigado() ? "Ventilador ligado" : "Ventilador desligado");
 			}
 		}
 	}

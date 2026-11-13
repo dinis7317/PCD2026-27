@@ -2,16 +2,14 @@ package iscot.event.sensor;
 
 import iscot.enums.Areas;
 
-public class GroundMoistureSensorEvent extends SensorEvent{
-	public final float humidity; // always in %
+public class GroundMoistureSensorEvent extends SensorEvent {
 
-	public GroundMoistureSensorEvent(Areas area, float humidity) {
-		super(area);
-		this.humidity = humidity;
+	public GroundMoistureSensorEvent(Areas area, float valor) {
+		super(area, valor);
 	}
 
 	@Override
 	public String toString() {
-		return "GroundMoistureSensorEvent [humidity=" + humidity + ", area=" + area + ", getType()=" + getType() + "]";
+		return "GroundMoistureSensorEvent {area=" + getArea() + ", valor=" + getValor() + " %, topico=" + getType() + "}";
 	}
 }

@@ -4,15 +4,21 @@ import iscot.enums.Areas;
 import iscot.enums.Type;
 
 public class RegistrationEvent extends Event {
-	public final Type type;
 
-	public RegistrationEvent(Areas area, Type type) {
+	private final Type tipoCliente;
+
+	public RegistrationEvent(Areas area, Type tipoCliente) {
 		super(area);
-		this.type = type;
+		this.tipoCliente = tipoCliente;
 	}
+
 	@Override
 	public Type getType() {
-		return type;
+		return tipoCliente;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "RegistrationEvent {area=" + getArea() + ", tipo=" + tipoCliente + "}";
+	}
 }

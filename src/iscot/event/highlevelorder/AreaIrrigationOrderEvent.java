@@ -3,15 +3,20 @@ package iscot.event.highlevelorder;
 import iscot.enums.Areas;
 
 public class AreaIrrigationOrderEvent extends HighLevelOrderEvent {
-	public final boolean state;
 
-	public AreaIrrigationOrderEvent(Areas area, boolean state) {
+	private final boolean ligado;
+
+	public AreaIrrigationOrderEvent(Areas area, boolean ligado) {
 		super(area);
-		this.state = state;
+		this.ligado = ligado;
+	}
+
+	public boolean isLigado() {
+		return ligado;
 	}
 
 	@Override
 	public String toString() {
-		return "AreaIrrigationOrderEvent [state=" + state + ", area=" + area + "]";
+		return "AreaIrrigationOrderEvent {area=" + getArea() + ", ligado=" + ligado + ", topico=" + getType() + "}";
 	}
 }

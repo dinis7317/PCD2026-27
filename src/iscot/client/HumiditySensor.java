@@ -13,35 +13,30 @@ import iscot.event.sensor.HumiditySensorEvent;
 public class HumiditySensor {
 
 	public static void main(String[] args) {
-		if (args.length != 0 && args.length != 1) {
-			System.err.println("Invalid arguments!");
+		if (args.length > 1) {
+			System.err.println("Uso: HumiditySensor [área]");
 			return;
 		}
-
 		final Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.WC;
-		System.out.println("Modo local: sensor em " + area + "...");
 
-		JFrame janela = new JFrame("Humidade em " + area);
-		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		JPanel painel = new JPanel();
-		painel.setLayout(new BorderLayout());
-		SensorControl sensorControl = new SensorControl("☀", "Humidade - " + area, "%",
-				0, 100, 1, 50,
+		SensorControl slider = new SensorControl("💧", "Humidade do ar - " + area, "%",
+				0, 100, 5, 60,
 				valor -> emitir(new HumiditySensorEvent(area, (float) valor)));
-		painel.add(sensorControl, BorderLayout.CENTER);
+
+		JPanel painel = new JPanel(new BorderLayout());
+		painel.add(slider, BorderLayout.CENTER);
+
+		JFrame janela = new JFrame("Sensor de humidade do ar - " + area);
+		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		janela.setContentPane(painel);
-		janela.setLocation(600, 400);
-		janela.setMinimumSize(janela.getSize());
 		janela.pack();
+		janela.setLocationRelativeTo(null);
 		janela.setVisible(true);
 
-
-		emitir(new HumiditySensorEvent(area, (float) sensorControl.getValor()));
+		emitir(new HumiditySensorEvent(area, (float) slider.getValor()));
 	}
 
-
 	private static void emitir(Event evento) {
-		System.out.println("Evento gerado: " + evento);
+		System.out.println("[sensor] " + evento);
 	}
 }

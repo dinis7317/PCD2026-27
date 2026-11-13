@@ -13,34 +13,30 @@ import iscot.event.sensor.TemperatureSensorEvent;
 public class TemperatureSensor {
 
 	public static void main(String[] args) {
-		if (args.length != 0 && args.length != 1) {
-			System.err.println("Invalid arguments!");
+		if (args.length > 1) {
+			System.err.println("Uso: TemperatureSensor [área]");
 			return;
 		}
+		final Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.BedRoom;
 
-		final Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Quarto;
-		System.out.println("Modo local: sensor em " + area + "...");
-
-		JFrame janela = new JFrame("Temperatura em " + area);
-		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-
-		JPanel painel = new JPanel();
-		painel.setLayout(new BorderLayout());
-		SensorControl sensorControl = new SensorControl("🌡", "Temperatura - " + area, "°C",
-				-10, 50, 0.5, 22.5,
+		SensorControl slider = new SensorControl("🌡", "Temperatura - " + area, "°C",
+				0, 40, 0.5, 20,
 				valor -> emitir(new TemperatureSensorEvent(area, (float) valor)));
-		painel.add(sensorControl, BorderLayout.CENTER);
+
+		JPanel painel = new JPanel(new BorderLayout());
+		painel.add(slider, BorderLayout.CENTER);
+
+		JFrame janela = new JFrame("Sensor de temperatura - " + area);
+		janela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		janela.setContentPane(painel);
-		janela.setLocation(600, 400);
-		janela.setMinimumSize(janela.getSize());
 		janela.pack();
+		janela.setLocationRelativeTo(null);
 		janela.setVisible(true);
 
-		emitir(new TemperatureSensorEvent(area, (float) sensorControl.getValor()));
+		emitir(new TemperatureSensorEvent(area, (float) slider.getValor()));
 	}
 
 	private static void emitir(Event evento) {
-		System.out.println("Evento gerado: " + evento);
+		System.out.println("[sensor] " + evento);
 	}
 }

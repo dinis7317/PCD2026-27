@@ -31,9 +31,6 @@ public class PainelHistorico extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 	}
 
-	/**
-	 * @param descricao Texto descritivo da ação realizada (ex: "Lâmpada ligada", "Ventilador desligado")
-	 */
 	public void registarAcao(String descricao) {
 		if (descricao != null) {
 			SwingUtilities.invokeLater(() -> {

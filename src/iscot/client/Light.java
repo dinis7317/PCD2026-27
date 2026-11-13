@@ -19,11 +19,6 @@ public class Light {
 	private final LightIcon luz;
 	private final PainelHistorico historico;
 
-	/**
-	 * Construtor do Atuador de Luz.
-	 * 
-	 * @param area Divisão da casa onde o atuador opera
-	 */
 	public Light(Areas area) {
 		this.area = area;
 
@@ -33,11 +28,9 @@ public class Light {
 		JPanel painel = new JPanel(new BorderLayout(5, 5));
 		painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		// Ícone gráfico central
 		luz = new LightIcon();
 		painel.add(luz, BorderLayout.CENTER);
 
-		// Componente reutilizável de Histórico de Ações (Issue #1 / Secção 1.3)
 		historico = new PainelHistorico();
 		painel.add(historico, BorderLayout.SOUTH);
 
@@ -47,15 +40,12 @@ public class Light {
 		janela.setVisible(true);
 	}
 
-	/**
-	 * @param message Evento recebido a ser interpretado pelo atuador
-	 */
 	public void aplicarEvento(Event message) {
 		if (message instanceof AreaLightingOrderEvent) {
 			AreaLightingOrderEvent order = (AreaLightingOrderEvent) message;
-			if (order.area == this.area) {
-				luz.setLigada(order.state);
-				historico.registarAcao(order.state ? "Lâmpada ligada" : "Lâmpada desligada");
+			if (order.getArea() == this.area) {
+				luz.setLigada(order.isLigado());
+				historico.registarAcao(order.isLigado() ? "Lâmpada ligada" : "Lâmpada desligada");
 			}
 		}
 	}
@@ -66,7 +56,7 @@ public class Light {
 			return;
 		}
 
-		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Sala;
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.LivingRoom;
 		Light light = new Light(area);
 		Thread.sleep(1000);
 		light.aplicarEvento(new AreaLightingOrderEvent(area, true));

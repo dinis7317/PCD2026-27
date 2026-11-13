@@ -21,11 +21,6 @@ public class ArCondicionado {
 	private final ACIcon arCond;
 	private final PainelHistorico painelHistorico;
 
-	/**
-	 * Construtor do Atuador de Ar Condicionado.
-	 *
-	 * @param area Divisão da casa onde o atuador opera
-	 */
 	public ArCondicionado(Areas area) {
 		this.area = area;
 
@@ -38,7 +33,6 @@ public class ArCondicionado {
 		arCond = new ACIcon();
 		painel.add(arCond, BorderLayout.CENTER);
 
-		// Componente de Histórico de Ações (Issue #1 / Secção 1.3)
 		painelHistorico = new PainelHistorico();
 		painel.add(painelHistorico, BorderLayout.SOUTH);
 
@@ -48,34 +42,29 @@ public class ArCondicionado {
 		janela.setVisible(true);
 	}
 
-	/**
-	 * @param message Evento recebido (AreaTemperatureOrderEvent ou AreaVentilationOrderEvent)
-	 */
 	public void aplicarEvento(Event message) {
 		if (message instanceof AreaTemperatureOrderEvent) {
 			AreaTemperatureOrderEvent order = (AreaTemperatureOrderEvent) message;
-			if (order.area == this.area) {
-				if (order.mode == AirConditioningMode.Desligado) {
+			if (order.getArea() == this.area) {
+				if (order.getModo() == AirConditioningMode.Desligado) {
 					arCond.setModo(AirConditioningMode.Desligado);
 					painelHistorico.registarAcao("AC desligado");
 				} else {
-					// o ACIcon só aceita temperaturas entre 16 e 30 C
-					if (order.temperature >= 16 && order.temperature <= 30) {
-						arCond.setTemperatura(order.temperature);
+					if (order.getTemperatura() >= 16 && order.getTemperatura() <= 30) {
+						arCond.setTemperatura(order.getTemperatura());
 					}
-					arCond.setModo(order.mode);
-					painelHistorico.registarAcao("AC em " + order.mode + " (" + order.temperature + " ºC)");
+					arCond.setModo(order.getModo());
+					painelHistorico.registarAcao("AC em " + order.getModo() + " (" + order.getTemperatura() + " ºC)");
 				}
 			}
 
 		} else if (message instanceof AreaVentilationOrderEvent) {
 			AreaVentilationOrderEvent order = (AreaVentilationOrderEvent) message;
-			if (order.area == this.area) { // ordens de outras áreas são ignoradas
+			if (order.getArea() == this.area) {
 				AirConditioningMode atual = arCond.getModo();
 				if (atual == AirConditioningMode.Frio || atual == AirConditioningMode.Aquecimento) {
-					// Enunciado: só ventila se não estiver a arrefecer ou a aquecer
 					System.out.println("Ordem de ventilação ignorada: AC em " + atual);
-				} else if (order.state) {
+				} else if (order.isLigado()) {
 					arCond.setModo(AirConditioningMode.Ventilação);
 					painelHistorico.registarAcao("AC em Ventilação");
 				} else if (atual == AirConditioningMode.Ventilação) {
@@ -91,7 +80,7 @@ public class ArCondicionado {
 			System.err.println("Invalid arguments!");
 			return;
 		}
-		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Quarto;
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.BedRoom;
 		ArCondicionado ac = new ArCondicionado(area);
 		Thread.sleep(1000);
 		ac.aplicarEvento(new AreaTemperatureOrderEvent(area, AirConditioningMode.Frio, 21.0f));

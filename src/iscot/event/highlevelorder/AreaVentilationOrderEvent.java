@@ -2,16 +2,21 @@ package iscot.event.highlevelorder;
 
 import iscot.enums.Areas;
 
-public class AreaVentilationOrderEvent extends HighLevelOrderEvent{
-	@Override
-	public String toString() {
-		return "AreaVentilationOrderEvent [state=" + state + ", area=" + area + ", getType()=" + getType() + "]";
+public class AreaVentilationOrderEvent extends HighLevelOrderEvent {
+
+	private final boolean ligado;
+
+	public AreaVentilationOrderEvent(Areas area, boolean ligado) {
+		super(area);
+		this.ligado = ligado;
 	}
 
-	public final boolean state;
+	public boolean isLigado() {
+		return ligado;
+	}
 
-	public AreaVentilationOrderEvent(Areas area, boolean state) {
-		super(area);
-		this.state = state;
+	@Override
+	public String toString() {
+		return "AreaVentilationOrderEvent {area=" + getArea() + ", ligado=" + ligado + ", topico=" + getType() + "}";
 	}
 }

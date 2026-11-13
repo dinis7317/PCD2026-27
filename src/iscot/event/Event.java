@@ -6,16 +6,16 @@ import iscot.enums.Areas;
 import iscot.enums.Type;
 
 public abstract class Event implements Serializable {
-	@Override
-	public String toString() {
-		return "Message [area=" + area + " type:"+ getType()+"]";
-	}
 
-	public final Areas area;
-	
-	public abstract Type getType();
+	private final Areas area;
 
-	public Event(Areas area) {
+	protected Event(Areas area) {
 		this.area = area;
 	}
+
+	public Areas getArea() {
+		return area;
+	}
+
+	public abstract Type getType();
 }

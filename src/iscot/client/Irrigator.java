@@ -19,11 +19,6 @@ public class Irrigator {
 	private final IrrigationIcon irrigationIcon;
 	private final PainelHistorico historico;
 
-	/**
-	 * Construtor do Atuador de Rega (Irrigador).
-	 * 
-	 * @param area Divisão/área onde o atuador opera (normalmente Jardim)
-	 */
 	public Irrigator(Areas area) {
 		this.area = area;
 
@@ -36,7 +31,6 @@ public class Irrigator {
 		irrigationIcon = new IrrigationIcon();
 		painel.add(irrigationIcon, BorderLayout.CENTER);
 
-		// componente historico
 		historico = new PainelHistorico();
 		painel.add(historico, BorderLayout.SOUTH);
 
@@ -46,15 +40,12 @@ public class Irrigator {
 		janela.setVisible(true);
 	}
 
-	/**
-	 * @param message Evento recebido a ser interpretado pelo atuador
-	 */
 	public void aplicarEvento(Event message) {
 		if (message instanceof AreaIrrigationOrderEvent) {
 			AreaIrrigationOrderEvent order = (AreaIrrigationOrderEvent) message;
-			if (order.area == this.area) {
-				irrigationIcon.setAtiva(order.state);
-				historico.registarAcao(order.state ? "Rega ligada" : "Rega desligada");
+			if (order.getArea() == this.area) {
+				irrigationIcon.setAtiva(order.isLigado());
+				historico.registarAcao(order.isLigado() ? "Rega ligada" : "Rega desligada");
 			}
 		}
 	}
@@ -64,7 +55,7 @@ public class Irrigator {
 			System.err.println("Invalid arguments!");
 			return;
 		}
-		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Jardim;
+		Areas area = (args.length == 1) ? Areas.valueOf(args[0]) : Areas.Garden;
 		Irrigator irr = new Irrigator(area);
 		Thread.sleep(1000);
 		irr.aplicarEvento(new AreaIrrigationOrderEvent(area, true));

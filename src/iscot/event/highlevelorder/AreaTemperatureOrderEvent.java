@@ -3,17 +3,27 @@ package iscot.event.highlevelorder;
 import iscot.enums.AirConditioningMode;
 import iscot.enums.Areas;
 
-public class AreaTemperatureOrderEvent extends HighLevelOrderEvent{
-	public AreaTemperatureOrderEvent(Areas area, AirConditioningMode mode, float temperature) {
+public class AreaTemperatureOrderEvent extends HighLevelOrderEvent {
+
+	private final AirConditioningMode modo;
+	private final float temperatura;
+
+	public AreaTemperatureOrderEvent(Areas area, AirConditioningMode modo, float temperatura) {
 		super(area);
-		this.mode = mode;
-		this.temperature = temperature;
+		this.modo = modo;
+		this.temperatura = temperatura;
 	}
+
+	public AirConditioningMode getModo() {
+		return modo;
+	}
+
+	public float getTemperatura() {
+		return temperatura;
+	}
+
 	@Override
 	public String toString() {
-		return "AreaTemperatureOrderEvent [mode=" + mode + ", temperature=" + temperature + ", area=" + area + "]";
+		return "AreaTemperatureOrderEvent {area=" + getArea() + ", modo=" + modo + ", temperatura=" + temperatura + " °C, topico=" + getType() + "}";
 	}
-	public final AirConditioningMode mode;
-	public final float temperature;
-
 }

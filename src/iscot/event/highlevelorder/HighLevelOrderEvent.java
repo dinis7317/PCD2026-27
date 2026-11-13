@@ -6,7 +6,7 @@ import iscot.event.Event;
 
 public abstract class HighLevelOrderEvent extends Event {
 
-	public HighLevelOrderEvent(Areas area) {
+	protected HighLevelOrderEvent(Areas area) {
 		super(area);
 	}
 
@@ -14,5 +14,4 @@ public abstract class HighLevelOrderEvent extends Event {
 	public Type getType() {
 		return Type.DECIDER;
 	}
-
 }
